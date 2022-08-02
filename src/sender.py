@@ -17,12 +17,18 @@ sender_name = socket.gethostname()
 # conecting to the first available camera
 camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
 # Grabing Continusely (video) with minimal delay
+camera.Open()
+
+camera.ExposureTime.SetValue(args.exposure)
+camera.Height.SetValue(args.height)
+camera.Width.SetValue(args.width)
+camera.CenterX.SetValue(True)
+camera.CenterY.SetValue(True)
+
 camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
 converter = pylon.ImageFormatConverter()
-camera.ExposureTime.SetValue(args.exposure)
 
-camera.Width = args.width
-camera.Height = args.height
+
 # converting to opencv bgr format
 converter.OutputPixelFormat = pylon.PixelType_BGR8packed
 converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
