@@ -1,18 +1,28 @@
+import argparse
 import sys
 import socket
 
 from pypylon import pylon
 import imagezmq
 
-sender = imagezmq.ImageSender(connect_to=sys.argv[1])
+parser = argparse.ArgumentParser()
+parser.add_argument('host')
+parser.add_argument('-x', '--width', type=int, default=1920)
+parser.add_argument('-y', '--height', type=int, default=1080)
+parser.add_argument('-e', '--exposure', type=int, default=33000)
+args = parser.parse_args()
+
+sender = imagezmq.ImageSender(connect_to=args.host)
 sender_name = socket.gethostname()
 # conecting to the first available camera
 camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
 # Grabing Continusely (video) with minimal delay
 camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
 converter = pylon.ImageFormatConverter()
-camera.ExposureTime.SetValue(33000)
+camera.ExposureTime.SetValue(args.exposure)
 
+camera.Width = args.width
+camera.Height = args.height
 # converting to opencv bgr format
 converter.OutputPixelFormat = pylon.PixelType_BGR8packed
 converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned

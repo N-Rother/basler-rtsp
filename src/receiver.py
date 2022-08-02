@@ -4,9 +4,9 @@ import imagezmq
 hub = imagezmq.ImageHub()
 
 while True:
-    name, image = hub.recv_image()
+    _, image = hub.recv_image()
     cv2.namedWindow('receiver', cv2.WINDOW_NORMAL)
-    cv2.imshow(name, image)
+    cv2.imshow("receiver", image)
     k = cv2.waitKey(1)
     if k == 27:
         break
