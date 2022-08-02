@@ -5,6 +5,7 @@ import socket
 import cv2
 from pypylon import pylon
 import imagezmq
+import simplejpeg
 
 parser = argparse.ArgumentParser()
 parser.add_argument('host')
@@ -26,6 +27,7 @@ camera.Height.SetValue(args.height)
 camera.Width.SetValue(args.width)
 camera.CenterX.SetValue(True)
 camera.CenterY.SetValue(True)
+camera.PixelFormat.SetValue("BayerRG8")
 
 camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
 converter = pylon.ImageFormatConverter()
@@ -44,9 +46,8 @@ while camera.IsGrabbing():
         # Access the image data
         image = converter.Convert(grabResult)
         img = image.GetArray()
-        img = cv2.imgencode('.jpg', img, encode_param)
-
-        sender.send_image(sender_name, img)
+        jpg_buf = simplejpeg.encode_jpeg(img, quality=args.compression, colorspace='RGB')
+        sender.send_jpg(sender_name, jpg_buf)
     grabResult.Release()
 
 # Releasing the resource
