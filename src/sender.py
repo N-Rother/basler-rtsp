@@ -2,7 +2,6 @@ import sys
 import socket
 
 from pypylon import pylon
-import cv2
 import imagezmq
 
 sender = imagezmq.ImageSender(connect_to=sys.argv[1])
@@ -26,14 +25,8 @@ while camera.IsGrabbing():
         image = converter.Convert(grabResult)
         img = image.GetArray()
         sender.send_image(sender_name, img)
-        cv2.namedWindow('sender', cv2.WINDOW_NORMAL)
-        cv2.imshow('sender', img)
-        k = cv2.waitKey(1)
-        if k == 27:
-            break
     grabResult.Release()
 
 # Releasing the resource
 camera.StopGrabbing()
 
-cv2.destroyAllWindows()
